@@ -1,0 +1,2 @@
+expname,object_id,model_type,object_type,attachment_type,noise_std,object_kernel_width,deformation_kernel_width,initial_step_size,max_iterations,convergence_tolerance,freeze_control_points,freeze_template,template
+fullset,atta,DeterministicAtlas,SurfaceMesh,current,0.1,0.1,0.1,0.01,5000,1E-10,off,off,atta006
