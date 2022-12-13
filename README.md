@@ -4,8 +4,8 @@
 
 <img src="images/atta009.gif" width="200" align="center">
 
-## Getting Set-up:
-### System Requirements:
+## Getting Set Up:
+#### System Requirements:
 1. Linux or Mac OS
 2. Python(v.3.8) and Anaconda (Python package management system) installed, you can use the [miniconda](https://docs.conda.io/en/latest/miniconda.html) installation if not already installed.
 3. [Paraview](https://www.paraview.org/): for visualising results, can display VTK files and quickly show animations
@@ -13,10 +13,10 @@
 5. (Optional) [MeshLab](https://www.meshlab.net/): for cleaning mesh files
 6. (Optional) [MITK](https://www.mitk.org/wiki/The_Medical_Imaging_Interaction_Toolkit_(MITK)): if you need to place landmarks
 
-### Data Requirements:
+#### Data Requirements:
 Deformetrica requires coarsley aligned *.vtk* mesh files. This tutorial starts from the object of interest already segmented from scans and saved as 3D mesh files. Please use a segmentation software of your choice to export as mesh file (preferably a VTK file, but can convert from STL or PLY). Or, if you have *.nii.gz* segmentations, you can follow the tutorial at the bottom to batch export all of your scans to mesh files.
 
-## Getting Started:
+## First Steps:
 1. Clone this repository to a local directory.
 
 2. Create a new conda environment and install required packages using **requirements.txt**.
@@ -29,11 +29,11 @@ pip install -r requirements.txt
 
 3. Organize your data directory (see **File Structure** section below).
 
-4. Determine where to start the tutorial:
-- Mesh files need cleaning and decimating: **go to 'Mesh Cleaning' section below**
-- Mesh files not '.vtk': **go to step 1**
-- Mesh files not aligned: **go to step 2**
-- Mesh files aligned and saved as '.vtk': **go to step 3**
+4. Determine where to start the tutorial: \
+ *mesh files need cleaning and decimating*  ⮕ **go to 'Mesh Cleaning' section below** \
+ *mesh files not '.vtk'*  ⮕  **go to step 1** \
+ *mesh files not aligned:*  ⮕ **go to step 2** \
+ *mesh files aligned and saved as '.vtk'*  ⮕ **go to step 3**
 
 
 ## Main Tutorial
@@ -41,25 +41,25 @@ pip install -r requirements.txt
 #### 1. Convert mesh files to `.vtk` files
 Ensure all of your mesh files are in one folder, saved as PLY or STL files. Open a terminal and run:
 ```
- python preprocessing/convert.py --input inputfolder --type filetype
+ python preprocessing/convert.py --type filetype [--input inputfolder]
  ``` 
-where input folder is the folder with your mesh files, and filetype is the type of file to convert from ( enter *stl* or  *ply*). Files will be converted and saved in the input folder.
+where  filetype is the type of file to convert from ( enter *stl* or  *ply*) and input folder is the folder with your mesh files. If input folder is not specified, the program will look for mesh files in the **data/mesh/unaligned** directory. Files will be converted and saved in the input folder.
 
 
 #### 2. Align mesh files
 If mesh files are not scaled and aligned, place a few landmarks on each mesh file (not many needed for coarse alignment; usually 5-10 evenly distributed around the object). Landmarks should have point correspondence between objects and be placed in the same order on every object. There are many software options for placing landmarks, but [MITK](https://www.mitk.org/wiki/The_Medical_Imaging_Interaction_Toolkit_(MITK)) is open-source, allows input of VTK mesh files, and export of MPS landmark files.
-Save your landmark files with the same name as your corresponding mesh file and as a 'mps' file. It is important your filenames closely match (**adding leading zeroes if you have double digit sample numbers!**) or the alignment will not work properly.
+Save your landmark files with the same name as your corresponding mesh file and as a *.mps* file. It is important your filenames closely match (**adding leading zeroes if you have double digit sample numbers!**) or the alignment will not work properly. The landmarks should be saved in the **data/landmarks** folder, and your mesh files should be in **data/mesh/unaligned**.
 
 To align your files, run: 
 ```
-python preprocessing/align.py [--config configfile] 
+python preprocessing/align.py 
 ```
-The meshes will be aligned and scaled, and then saved in the "model_runs" directory specified in the config file. This will also create an 'initial_template.vtk' that is simply your first sample in the list. 
+The meshes will be aligned and scaled, and then saved in the **data/mesh/aligned** directory. To check the alignment, you can open up the files in paraview. 
     
 
 #### 3. Create deformetrica files
-Open up the 'parameters.csv' file to specify the parameters for your model run. This is what will alter how well the deformation fits your series of shapes. Important parameters to alter:
-    - expname: enter the experiment name that is in your config file
+Open up the *parameters.csv* file to specify the parameters for your model run. The parameters will alter how well the deformation fits your series of shapes. Important parameters to alter:
+    - expname: make sure you use a unique name for your model run and use the same name in the next steps
     - object_id: the name of the objects that you are morphing
     - object_kernel_width and deformation_kernel_width: these are the parameters that will most impact your morphing. It will impact the number of control points on the surface, and thus how detailed your morphing is. Too large a number and there will be only a few control points, and overall movement in your shapes, not detailed movement. Too small and there will be small changes on the surface of your mesh files, but not an overall shift.
     - noise_std: how noisy the morphing is, generally set from 0.1 - 1
@@ -68,29 +68,28 @@ Open up the 'parameters.csv' file to specify the parameters for your model run. 
 
 Additional parameter details are available [here](https://gitlab.com/icm-institute/aramislab/deformetrica/-/wikis/3_user_manual/3.4_optimization_parameters_xml_file).
 
-After you have decided on a series of parameters for your run, as well as made sure your config file is up-to-date, open a terminal and run:
+After you have decided on a series of parameters for your run, open a terminal and run:
  ```
- python create_files.py [--config configfile]
+ python create_files.py 
  ```
-The following xml files will be saved in your experiment folder:
-    - model.xml: specifies the type of model, the kernel-width, object type, and template
-    - data_set.xml: list of all of the objects to be included in the model
-    - optimization_parameters.xml: parameters used in the model optimization procedure
+The following *.xml* files will be saved in the __model_runs/expname__ folder:
+  - model.xml: specifies the type of model, the kernel-width, object type, and template
+  - data_set.xml: list of all of the objects to be included in the model
+  - optimization_parameters.xml: parameters used in the model optimization procedure
+  - the mesh files in your **data/mesh/aligned** folder
 
 #### 4. Run deformetrica
 Before you run your model, make sure: 
- > _(1) All of your aligned mesh files are in your experiment directory. \
+ > __(1) All of your aligned mesh files are in your experiment directory. \
   (2) The mesh file names and paths match the files specified in 'data_set.xml'. \
   (3) All 3 XML files are in the experiment directory. \
-  (4) The ShapeAtlas conda env is active._ 
+  (4) The ShapeAtlas conda env is active.__ 
 
 Navigate into the model runs directory in a terminal and run: 
 ```
 deformetrica estimate model.xml data_set.xml -p optimization_parameters.xml [--output outdirectory]
 ```
-The first time this runs there will be a few calculations that take place. You know the program is running succesfully when you get this output:
-
-[ PICTURE ]
+The first time this runs there will be a few calculations that take place, but this will only need to run once. 
 
 Model results will be saved by default in an 'output' subdirectory. Please add an output flag (*--output* or *-o*) to specify directory.
 
@@ -110,7 +109,7 @@ Alternatively, you can look at the final morphing shape for each sample (file en
 
 ## Other Details
 ### File Structure
-To use the code as formatted, data files are expected to organized in a *data* folder in the following way. The segmentations folder is only needed if using batch conversion to mesh files, and the landmarks folder is only required if using the `align.py` function. Otherwise only a series of mesh files is needed in the mesh folder. 
+To use the code as formatted, data files are expected to organized in a **data** folder in the following way. The data folder should be in the ShapeAtlas directory (this repository). The segmentations folder is only needed if using batch conversion to mesh files, and the landmarks folder is only required if mesh files need aligning via `align.py`. If mesh files need aligning, place in **mesh/unaligned** folder, and if mesh files are already aligned, place in **mesh/aligned** folder. 
 
 ```
 data
@@ -124,14 +123,13 @@ data
 |   |  sample0n.mps
 |   
 |---mesh
-|   |  sample01.vtk
-|   |  sample0n.vtk
+|-------aligned
+|       |  sample01.vtk
+|       |  sample0n.vtk
+|-------unaligned
+|       |  sample01.vtk
+|       |  sample0n.vtk
 ```
-### Troubleshooting
-
-
-
-
 
 ### Mesh Cleaning
 Mesh cleaning can be performed using various functions in MeshLab and Blender. MeshLab is advantageous for its scripting capability, where you can create a filter script then apply this to multiple objects in the terminal. To create a filter script, open up your mesh file in the GUI, apply some filters, then savethe resulting script via "Filters"->"Show current filter" script. Some useful filters are "Remove Isolated Pieces", "Simplification: Quadric Edge Collapse Decimation", and 
