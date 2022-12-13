@@ -5,8 +5,8 @@
 from pathlib import Path
 import argparse
 import csv
-import yaml
 import os
+import shutil
 
 def write_data_set_xml(root_directory, parameters):
     list_vtk = list(root_directory.glob('*_a.vtk'))
@@ -39,7 +39,7 @@ def write_model_xml(root_directory, parameters):
     file.write("            <noise-std>%s</noise-std>\n" % parameters['noise_std'])
     file.write("            <kernel-type>keops</kernel-type>\n")
     file.write("            <kernel-width>%s</kernel-width>\n" % parameters['object_kernel_width'])
-    file.write("            <filename>initial_template.vtk</filename>\n")
+    file.write("            <filename>%s.vtk</filename>\n" % parameters['template'])
     file.write("        </object>\n")
     file.write("    </template>\n")
     file.write("    <deformation-parameters>\n")
@@ -68,28 +68,29 @@ def write_optimization_parameters_xml(root_directory, parameters):
 def main():
     # construct argument parse and parse arguments
     parser = argparse.ArgumentParser(description='Create xml files to run model.')
-    parser.add_argument('--config', help='Path to config file', default='configs/mesh.yaml')
+    parser.add_argument('--run', '-r', help='Name of model run', default='test')
     args = parser.parse_args()
 
-    # load config
-    print(f'Using config "{args.config}"')
-    cfg = yaml.safe_load(open(args.config, 'r'))
-
-    direc = cfg['root'] + '/model_runs/' + cfg['expname'] + '/'
+    direc = 'model_runs/' + args.run + '/'
     os.makedirs(direc, exist_ok = True)
-    paramfile = cfg['root'] + 'parameters.csv'
+    paramfile = 'parameters.csv'
 
     with open(paramfile, "r") as infile:
         reader = list(csv.DictReader(infile))
     
+    params = False
     for dic in reader:
-        if dic['expname'] == cfg['expname']:
+        if dic['expname'] == args.run:
             paramDict = dic
+            params = True
+    
+    if params:
+        write_data_set_xml(Path(direc), paramDict)
+        write_model_xml(Path(direc), paramDict)
+        write_optimization_parameters_xml(Path(direc), paramDict)
 
-            
-    write_data_set_xml(Path(direc), paramDict)
-    write_model_xml(Path(direc), paramDict)
-    write_optimization_parameters_xml(Path(direc), paramDict)
+    else:
+        print("No parameters listed for model run {}. Please update parameters.csv file.".format(args.run))
 
 if __name__ == '__main__':
     main()

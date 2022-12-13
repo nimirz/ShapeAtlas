@@ -10,8 +10,6 @@
 import os
 from glob import glob
 import argparse
-import yaml
-
 
 # read LMS file
 def read_mps_file(landmarksfile):
@@ -197,16 +195,12 @@ def align_meshes_to_center(meshfiles, landmarksfiles, mode='similarity', output_
 def main():
     # construct argument parse and parse arguments
     parser = argparse.ArgumentParser(description='Align and scale mesh files.')
-    parser.add_argument('--config', help='Path to config file', default='/configs/base.yaml')
+    parser.add_argument("-r", "--run", help='Name of model run', default="test")
     args = parser.parse_args()
 
-    # load config
-    print(f'Using config "{args.config}"')
-    cfg = yaml.safe_load(open(args.config, 'r'))
-
-    meshfolder = cfg['root'] + '/mesh/'
-    landfolder = cfg['root'] + '/landmarks/' +'/'
-    outdir = cfg['root'] + '/experiments/' + cfg['expname'] + '/'
+    meshfolder = 'data/mesh/'
+    landfolder = 'data/landmarks/'
+    outdir = 'model_runs/' + args.run + '/'
     os.makedirs(outdir, exist_ok=True)
 
     # get mesh and landmark files    

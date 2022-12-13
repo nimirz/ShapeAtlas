@@ -1,7 +1,0 @@
-# Config file used to define parameters for mesh processing.
-
-# file access
-root: /home/bg-nimirzia/Documents/ShapeAtlas/ # base directory
-
-# deformetrica parameters
-expname: test
