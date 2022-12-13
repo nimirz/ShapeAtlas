@@ -7,6 +7,7 @@ import argparse
 import csv
 import os
 import shutil
+from glob import glob
 
 def write_data_set_xml(root_directory, parameters):
     list_vtk = list(root_directory.glob('*_a.vtk'))
@@ -69,11 +70,19 @@ def main():
     # construct argument parse and parse arguments
     parser = argparse.ArgumentParser(description='Create xml files to run model.')
     parser.add_argument('--run', '-r', help='Name of model run', default='test')
+    parser.add_argument('--input', '-i', help='Path to directory with mesh files', default='data/mesh/aligned')
     args = parser.parse_args()
 
     direc = 'model_runs/' + args.run + '/'
     os.makedirs(direc, exist_ok = True)
     paramfile = 'parameters.csv'
+    meshFiles = glob('{}/*.vtk'.format(args.input))
+
+    if meshFiles:
+        for mesh in meshFiles:
+            shutil.copy(mesh, direc+os.path.basename(mesh))
+    else:
+        print("No mesh files found!")
 
     with open(paramfile, "r") as infile:
         reader = list(csv.DictReader(infile))

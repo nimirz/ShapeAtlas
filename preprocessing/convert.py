@@ -17,7 +17,7 @@ import os
 
 def main():
 	ap = argparse.ArgumentParser(description='Covert mesh files from ply or stl to vtk.')
-	ap.add_argument("-i", "--input", required=True, help="Path to input mesh files.")
+	ap.add_argument("-i", "--input", required=True, help="Path to directory with mesh files.")
 	ap.add_argument("-t", "--type", required=True, help="Type of files to convert.")
 	args = vars(ap.parse_args())
 

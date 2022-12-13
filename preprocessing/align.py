@@ -193,19 +193,15 @@ def align_meshes_to_center(meshfiles, landmarksfiles, mode='similarity', output_
 
 
 def main():
-    # construct argument parse and parse arguments
-    parser = argparse.ArgumentParser(description='Align and scale mesh files.')
-    parser.add_argument("-r", "--run", help='Name of model run', default="test")
-    args = parser.parse_args()
-
-    meshfolder = 'data/mesh/'
+    meshfolder = 'data/mesh/unaligned/'
     landfolder = 'data/landmarks/'
-    outdir = 'model_runs/' + args.run + '/'
+    outdir = 'data/mesh/aligned/'
     os.makedirs(outdir, exist_ok=True)
 
     # get mesh and landmark files    
-    meshFiles = glob('{}{}*dec.vtk'.format(meshfolder, os.sep))
+    meshFiles = glob('{}*.vtk'.format(meshfolder))
     landmarkFiles = glob('{}{}*.mps'.format(landfolder, os.sep))
+    # ignore initial template or already aligned files
     meshFiles[:] = [el for el in meshFiles if not (('initial_template.vtk' in el) or ('_a.vtk' in el)) ]
 
     # assert similar size and sort lists
