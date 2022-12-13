@@ -190,37 +190,6 @@ def align_meshes_to_center(meshfiles, landmarksfiles, mode='similarity', output_
                                                                                          os.path.basename(l),
                                                                                          transform.GetMatrix().Determinant()))
 
-        if idx == 0:
-            reader = vtk.vtkPolyDataReader()
-            reader.SetFileName(m)
-            reader.Update()
-            mesh = reader.GetOutput()
-
-            ### read landmarks
-            lms = read_mps_file(l)
-            sourcepoints = vtk.vtkPoints()
-            for p in lms:
-                sourcepoints.InsertNextPoint(p[0], p[1], p[2])
-
-            transform = vtk.vtkLandmarkTransform()
-            transform.SetSourceLandmarks(sourcepoints)
-            transform.SetTargetLandmarks(procrustes_mean_points)
-            if mode == 'similarity':
-                transform.SetModeToSimilarity()
-            elif mode == 'rigid':
-                transform.SetModeToRigidBody()
-            elif mode == 'affine':
-                transform.SetModeToAffine()
-            transform.Update()
-
-            transformedpoints = vtk.vtkPoints()
-            transform.TransformPoints(mesh.GetPoints(), transformedpoints)
-            mesh.SetPoints(transformedpoints)
-
-            w.SetFileName('{}{}initial_template.vtk'.format(output_directory, os.sep))
-            w.SetInputData(mesh)
-            w.Update()
-
     return output_meshes
 
 
