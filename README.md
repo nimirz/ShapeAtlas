@@ -84,13 +84,13 @@ The following *.xml* files will be saved in the __model_runs/expname__ folder:
 Before you run your model, make sure: \
  (1) All of your aligned mesh files are in the correct **model_runs** directory. \
  (2) The mesh file names and paths match the files specified in **data_set.xml**. \
- (3) All 3 XML files are in the experiment directory. \
+ (3) All 3 XML files are in the experiment directory. 
 
-Navigate into the **model_runs** directory with the name for this run in a terminal and enter: 
+In a terminal, navigate into the **model_runs/expname** directory, where expname is model name entered in the parameters file. From this directory, enter: 
 ```
 deformetrica estimate model.xml data_set.xml -p optimization_parameters.xml [--output outdir]
 ```
-The first time this runs there will be a few calculations that take place, but this will only need to run once. 
+The first time this runs there will be a series of calculations that take place, but this will only need to run once. 
 
 Model results will be saved by default in an **output** subdirectory. Please add an output flag (*--output* or *-o*) to specify directory.
 
@@ -104,7 +104,7 @@ Within your model output folder there will be a series of files:
 - The residuals of the fit: `DeterministicAtlas__EstimatedParameters__Residuals.txt`
 - A series of 20 vtk files for each subject, progressing from the the template shape to the individual shape: `DeterministicAtlas_Flow_object_subject_samplename_0.vtk` ⮕ `DeterministicAtlas_Flow_object_subject_samplename_19.vtk` 
 
-For a first look at how well the morphing worked, open up the vtk files from 0 to 19 for a subject in Paraview. Paraview usually automatically groups files in a series together, so jut press the 'play' button to watch the morphing progress.
+For a first look at how well the morphing worked, open up the *.vtk* files from 0 to 19 for a subject in Paraview. Paraview usually automatically groups files in a series together, so just press the 'play' button to watch the morphing progress.
 
 Alternatively, you can look at the final morphing shape for each sample (file ending in 19) and see how well that fits to the real data. After seeing how well the model performed, adjust your parameters (starting with kernel width) to try and get better results. 
 
@@ -134,7 +134,7 @@ data
 
 ### Mesh Cleaning
 Mesh cleaning can be performed using various functions in MeshLab and Blender. MeshLab is advantageous for its scripting capability, where you can create a filter script then apply this to multiple objects in the terminal. To create a filter script, open up your mesh file in the GUI, apply some filters, then savethe resulting script via "Filters"->"Show current filter" script. Some useful filters are "Remove Isolated Pieces", "Simplification: Quadric Edge Collapse Decimation", and 
-"Laplacian Smooth" (or any of the other smoothing functions depending on your prefence). Once you have your filter script, you can apply to multiple objects in a folder by running the command: \
+"Laplacian Smooth" (or any of the other smoothing functions depending on your prefence). Once you have your filter script, you can apply to multiple objects in a folder by running the command: 
 ```
 meshlabserver -i file.ply -o clean_file.ply -s filter_script.mlx
 ```
