@@ -14,7 +14,7 @@
 6. (Optional) [MITK](https://www.mitk.org/wiki/The_Medical_Imaging_Interaction_Toolkit_(MITK)): if you need to place landmarks
 
 #### Data Requirements:
-Deformetrica requires coarsley aligned *.vtk* mesh files. This tutorial starts from the object of interest already segmented from scans and saved as 3D mesh files. Please use a segmentation software of your choice to export as mesh file (preferably a VTK file, but can convert from STL or PLY). Or, if you have *.nii.gz* segmentations, you can follow the tutorial at the bottom to batch export all of your scans to mesh files.
+Deformetrica requires coarsley aligned *.vtk* mesh files. This tutorial starts from the object of interest already segmented from scans and saved as 3D mesh files. Please use a segmentation software of your choice to export as mesh file (preferably a VTK file, but can convert from STL or PLY).
 
 ## First Steps:
 1. Clone this repository to a local directory.
