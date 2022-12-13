@@ -2,6 +2,8 @@
 [Deformetrica](https://www.deformetrica.org/) is an open-source tool that allows comparison of shape objects, performing tasks such as shape registration, atlas construction, and geodesic regression. This tutorial walks through the Deterministic Atlas procedure which, given a set of shapes, determines a "mean" or template shape, and the deformation from this template to the individual shapes. For more information, please refer to the deformetrica [documentation](https://gitlab.com/icm-institute/aramislab/deformetrica/-/wikis/home).
 
 
+<img src="images/atta009.gif" width="200" align="center">
+
 ## Getting Set-up:
 ### System Requirements:
 1. Linux or Mac OS
@@ -12,12 +14,12 @@
 6. (Optional) [MITK](https://www.mitk.org/wiki/The_Medical_Imaging_Interaction_Toolkit_(MITK)): if you need to place landmarks
 
 ### Data Requirements:
-Deformetrica requires coarsley aligned '.vtk' mesh files. This tutorial starts from the object of interest already segmented from scans and saved as 3D mesh files. Please use a segmentation software of your choice to export as mesh file (preferably a VTK file, but can convert from STL or PLY), most have an option for this. Or, if you have '.nii.gz' segmentations, you can follow the tutorial at the bottom to batch export all of your scans to mesh files.
+Deformetrica requires coarsley aligned *.vtk* mesh files. This tutorial starts from the object of interest already segmented from scans and saved as 3D mesh files. Please use a segmentation software of your choice to export as mesh file (preferably a VTK file, but can convert from STL or PLY). Or, if you have *.nii.gz* segmentations, you can follow the tutorial at the bottom to batch export all of your scans to mesh files.
 
 ## Getting Started:
 1. Clone this repository to a local directory.
 
-2. Create a new conda environment and install required packages using **`requirements.txt`**.
+2. Create a new conda environment and install required packages using **requirements.txt**.
 Open a terminal and run the following commands:
 ```
 conda create --name ShapeAtlas python=3.8
@@ -25,14 +27,13 @@ conda activate ShapeAtlas
 pip install -r requirements.txt
 ```
 
-3. Organize your data directory (see below).
+3. Organize your data directory (see **File Structure** section below).
 
-4. Set-up your config file.
-5. Determine where to start the tutorial:
-- Mesh files need cleaning and decimating: *go to 'Mesh Cleaning' section below*
-- Mesh files not '.vtk': *go to step 1*
-- Mesh files not aligned: *go to step 2*
-- Mesh files aligned and saved as '.vtk': *go to step 3*
+4. Determine where to start the tutorial:
+- Mesh files need cleaning and decimating: **go to 'Mesh Cleaning' section below**
+- Mesh files not '.vtk': **go to step 1**
+- Mesh files not aligned: **go to step 2**
+- Mesh files aligned and saved as '.vtk': **go to step 3**
 
 
 ## Main Tutorial
@@ -42,7 +43,7 @@ Ensure all of your mesh files are in one folder, saved as PLY or STL files. Open
 ```
  python preprocessing/convert.py --input inputfolder --type filetype
  ``` 
-where input folder is the folder with your mesh files, and filetype is the type of file to convert from ('.stl' or  '.ply'). Files will be converted and saved in the input folder.
+where input folder is the folder with your mesh files, and filetype is the type of file to convert from ( enter *stl* or  *ply*). Files will be converted and saved in the input folder.
 
 
 #### 2. Align mesh files
