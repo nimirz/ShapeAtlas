@@ -2,7 +2,7 @@
 [Deformetrica](https://www.deformetrica.org/) is an open-source tool that allows comparison of shape objects, performing tasks such as shape registration, atlas construction, and geodesic regression. This tutorial walks through the Deterministic Atlas procedure which, given a set of shapes, determines a "mean" or template shape, and the deformation from this template to the individual shapes. For more information, please refer to the deformetrica [documentation](https://gitlab.com/icm-institute/aramislab/deformetrica/-/wikis/home).
 
 
-<img src="images/atta009.gif" width="200" align="center">
+<img src="images/atta009.gif" width="200"><img src="images/atta010.gif" width="200"><img src="images/atta014.gif" width="200">
 
 ## Getting Set Up:
 #### System Requirements:
@@ -43,12 +43,12 @@ Ensure all of your mesh files are in one folder, saved as PLY or STL files. Open
 ```
  python preprocessing/convert.py --type filetype [--input inputfolder]
  ``` 
-where  filetype is the type of file to convert from ( enter *stl* or  *ply*) and input folder is the folder with your mesh files. If input folder is not specified, the program will look for mesh files in the **data/mesh/unaligned** directory. Files will be converted and saved in the input folder.
+where  filetype is the type of file to convert from (enter *stl* or  *ply*) and input folder is the folder with your mesh files. Arguments in brackets are optional. If input folder is not specified, the program will look for mesh files in the **data/mesh/unaligned** directory. Files will be converted and saved in the input folder.
 
 
 #### 2. Align mesh files
 If mesh files are not scaled and aligned, place a few landmarks on each mesh file (not many needed for coarse alignment; usually 5-10 evenly distributed around the object). Landmarks should have point correspondence between objects and be placed in the same order on every object. There are many software options for placing landmarks, but [MITK](https://www.mitk.org/wiki/The_Medical_Imaging_Interaction_Toolkit_(MITK)) is open-source, allows input of VTK mesh files, and export of MPS landmark files.
-Save your landmark files with the same name as your corresponding mesh file and as a *.mps* file. It is important your filenames closely match (**adding leading zeroes if you have double digit sample numbers!**) or the alignment will not work properly. The landmarks should be saved in the **data/landmarks** folder, and your mesh files should be in **data/mesh/unaligned**.
+Save your landmark files with the same name as your corresponding mesh file and as a *.mps* file. It is important your filenames closely match (**adding leading zeroes if you have double digit sample numbers!**) or the alignment will not work properly. The landmarks should be saved in the **data/landmarks** folder and your mesh files should be in **data/mesh/unaligned**.
 
 To align your files, run: 
 ```
@@ -58,40 +58,41 @@ The meshes will be aligned and scaled, and then saved in the **data/mesh/aligned
     
 
 #### 3. Create deformetrica files
-Open up the *parameters.csv* file to specify the parameters for your model run. The parameters will alter how well the deformation fits your series of shapes. Important parameters to alter:
-    - expname: make sure you use a unique name for your model run and use the same name in the next steps
-    - object_id: the name of the objects that you are morphing
-    - object_kernel_width and deformation_kernel_width: these are the parameters that will most impact your morphing. It will impact the number of control points on the surface, and thus how detailed your morphing is. Too large a number and there will be only a few control points, and overall movement in your shapes, not detailed movement. Too small and there will be small changes on the surface of your mesh files, but not an overall shift.
-    - noise_std: how noisy the morphing is, generally set from 0.1 - 1
-    - max_iterations and convergence_tolerance: these are related to the optimisation procedure and will determine when the model will stop running, with inital_step_size setting the progression at the start of the model.
-    - template: specify one of your objects or another object as a template file, typically one that is close to an average of your objects is best
+Open up the **parameters.csv** file in the main directory to specify parameters for your model run. The parameters will alter how well the deformation fits your series of shapes. Important parameters to alter:
+ - *expname*: make sure you use a unique name for your model run and use the same name in the next steps
+ - *object_id*: the name of the objects that you are morphing
+ - *object_kernel_width* and *deformation_kernel_width*: these are the parameters that will most impact your morphing. It will impact the number of control points on the surface, and thus how detailed your morphing is. Too large of a number and there will be only a few control points, your shapes will show very little defomration. Too small of a kernel width will result in very localised changes on the surface of the mesh. 
+ - *noise_std* how noisy the morphing is, generally set from 0.1 - 1
+ - *max_iterations* and *convergence_tolerance*: these are related to the optimisation procedure and will determine when the model will stop running, with *inital_step_size* setting the progression at the start of the model.
+ - *template*: specify one of your objects or another object as a template file, typically the object that is closest to an average of your objects is best. Enter the full filename apart from the file extension (*.vtk*). 
 
 Additional parameter details are available [here](https://gitlab.com/icm-institute/aramislab/deformetrica/-/wikis/3_user_manual/3.4_optimization_parameters_xml_file).
 
 After you have decided on a series of parameters for your run, open a terminal and run:
  ```
- python create_files.py 
+ python create_files.py [--run run_name --input inputdir]
  ```
+The run name should match the expname entered in the parameters csv. The default is *test*. The default input directory is **data/mesh/aligned**, but please specify a different directory if your mesh files are saved elsewhere. 
+
 The following *.xml* files will be saved in the __model_runs/expname__ folder:
   - model.xml: specifies the type of model, the kernel-width, object type, and template
   - data_set.xml: list of all of the objects to be included in the model
   - optimization_parameters.xml: parameters used in the model optimization procedure
-  - the mesh files in your **data/mesh/aligned** folder
+  - the mesh files to morph (taken from your input folder)
 
 #### 4. Run deformetrica
-Before you run your model, make sure: 
- > __(1) All of your aligned mesh files are in your experiment directory. \
-  (2) The mesh file names and paths match the files specified in 'data_set.xml'. \
-  (3) All 3 XML files are in the experiment directory. \
-  (4) The ShapeAtlas conda env is active.__ 
+Before you run your model, make sure: \
+ (1) All of your aligned mesh files are in the correct **model_runs** directory. \
+ (2) The mesh file names and paths match the files specified in **data_set.xml**. \
+ (3) All 3 XML files are in the experiment directory. \
 
-Navigate into the model runs directory in a terminal and run: 
+Navigate into the **model_runs** directory with the name for this run in a terminal and enter: 
 ```
-deformetrica estimate model.xml data_set.xml -p optimization_parameters.xml [--output outdirectory]
+deformetrica estimate model.xml data_set.xml -p optimization_parameters.xml [--output outdir]
 ```
 The first time this runs there will be a few calculations that take place, but this will only need to run once. 
 
-Model results will be saved by default in an 'output' subdirectory. Please add an output flag (*--output* or *-o*) to specify directory.
+Model results will be saved by default in an **output** subdirectory. Please add an output flag (*--output* or *-o*) to specify directory.
 
 Using CUDA? Refer to deformetrica's [page](https://gitlab.com/icm-institute/aramislab/deformetrica/-/wikis/3_user_manual/3.8_performance).
 
@@ -101,7 +102,7 @@ Within your model output folder there will be a series of files:
 - The location of the control points: `DeterministicAtlas__EstimatedParameters__ControlPoints.txt`
 - The momenta for each object: `DeterministicAtlas__EstimatedParameters__Momenta.txt`
 - The residuals of the fit: `DeterministicAtlas__EstimatedParameters__Residuals.txt`
-- A series of 20 vtk files for each subject, progressing from the the template shape to the individual shape: `DeterministicAtlas_Flow_object_subject_samplename_0.vtk` -> `DeterministicAtlas_Flow_object_subject_samplename_19.vtk` 
+- A series of 20 vtk files for each subject, progressing from the the template shape to the individual shape: `DeterministicAtlas_Flow_object_subject_samplename_0.vtk` ⮕ `DeterministicAtlas_Flow_object_subject_samplename_19.vtk` 
 
 For a first look at how well the morphing worked, open up the vtk files from 0 to 19 for a subject in Paraview. Paraview usually automatically groups files in a series together, so jut press the 'play' button to watch the morphing progress.
 
@@ -140,10 +141,6 @@ meshlabserver -i file.ply -o clean_file.ply -s filter_script.mlx
 MeshLab doesn't work with vtk files, so the mesh files will need to be converted afterwards (*see step 1*). 
 
 Blender is another open-source option, with many other functions, such as sculpting, which may be useful depending on the format of your data. 
-
-### Batch export from segmentations to mesh files
-...to be added later. 
-
 
 ## Citations:
 - many of the functions and workflow built upon from:
