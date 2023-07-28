@@ -38,7 +38,7 @@ def write_model_xml(root_directory, parameters):
     file.write("            <deformable-object-type>%s</deformable-object-type>\n" % parameters['object_type'])
     file.write("	    <attachment-type>%s</attachment-type>\n" % parameters['attachment_type'])
     file.write("            <noise-std>%s</noise-std>\n" % parameters['noise_std'])
-    file.write("            <kernel-type>torch</kernel-type>\n")
+    file.write("            <kernel-type>keops</kernel-type>\n")
     file.write("            <kernel-width>%s</kernel-width>\n" % parameters['object_kernel_width'])
     file.write("            <filename>%s.vtk</filename>\n" % parameters['template'])
     file.write("        </object>\n")
